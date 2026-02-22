@@ -40,6 +40,9 @@ class LiderPage(QWidget):
             time.sleep(5)
         if params['lider_install'] is True:
             self.lider_install(params)
+            time.sleep(5)
+        if params.get('apprise_install') is True:
+            self.apprise_install(params)
         # time.sleep(5)
         # self.xterm.kill()
 
@@ -151,3 +154,17 @@ class LiderPage(QWidget):
             self.im.ssh_disconnect()
         else:
             self.msg_box.information("Lider sunucusuna bağlantı sağlanamadı. Lütfen bağlantı ayarlarını kontrol ediniz.")
+
+    def apprise_install(self, params):
+        apprise_data = {
+            'ip': params["apprise_server_addr"],
+            'username': params["apprise_server_username"],
+            'password': params["apprise_server_username_pwd"],
+            'apprise_port': params.get("apprise_port", "8000"),
+        }
+        ssh_status = self.im.ssh_connect(apprise_data)
+        if ssh_status is True:
+            self.im.install_apprise(apprise_data)
+            self.im.ssh_disconnect()
+        else:
+            self.msg_box.information("Bildirim sunucusuna bağlantı sağlanamadı. Lütfen bağlantı ayarlarını kontrol ediniz.")

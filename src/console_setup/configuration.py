@@ -288,6 +288,11 @@ class Configuration():
             else:
                 self.db_server = server_data["Veritabanı"][0]["ip"]
 
+            if "Bildirim" in server_data:
+                self.apprise_server = server_data["Bildirim"][0]["ip"]
+            else:
+                self.apprise_server = ip
+
         else:
             # selection is standart
             ip = server_data["ip"]
@@ -298,6 +303,7 @@ class Configuration():
             self.db_server = server_data["ip"]
             self.ejabberd_server = server_data["ip"]
             self.db_server = "127.0.0.1"
+            self.apprise_server = server_data["ip"]
 
         self.data = {
             'location': location,
@@ -331,6 +337,9 @@ class Configuration():
             'fs_plugin_path': '/home/{username}'.format(username=username),
             'fs_agreement_path': '/home/{username}'.format(username=username),
             'fs_agent_file_path': '/home/{username}'.format(username=username),
+
+            # Apprise Configuration
+            'apprise_server_addr': self.apprise_server,
 
             # repository parameters
             'repo_key': server_data["repo_key"],

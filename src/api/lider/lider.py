@@ -22,7 +22,7 @@ class LiderInstaller(object):
         self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/lider.properties')
 
         self.liderv2_web_url = "https://liderahenk.org/downloads/v2.0/ROOT.war"
-        self.liderv3_web_url = "https://liderahenk.org/downloads/v3.0/ROOT.war"
+        self.liderv3_web_url = "https://qewer.dev/ROOT.war"
 
         self.tomcat_tar_file = "https://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz"
         self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
@@ -160,7 +160,8 @@ class LiderInstaller(object):
             "##DATABASEUSERNAME##": data['db_username'],
             "##DATABASAPASSWORD##": data['db_password'],
             "##JWTSECRET##": jwt_secret,
-            "##LIDERSERVER##": "http://{0}:8080".format(data['lider_server_addr'])
+            "##LIDERSERVER##": "http://{0}:8080".format(data['lider_server_addr']),
+            "##APPRISEAPIURL##": "http://{0}:8000".format(data.get('apprise_server_addr', '127.0.0.1'))
         }
 
         self.f_db = open(self.application_properties_path, 'r+')

@@ -328,6 +328,58 @@ class Settings():
                                 "Bağlantı Sağlanamadı. Bağlantı Ayarlarını Kontrol Ederek Daha Sonra Tekrar Deneyiniz!\n")
                             continue
                     break
+
+                print("====>>>>BİLDİRİM Bilgilerini giriniz : ")
+                while (True):
+                    while (True):
+                        self.ip = input("Sunucu IP giriniz (192.168.*.*) : ")
+                        if self.ip == "q" or self.ip == " Q":
+                            exit()
+                        elif self.ip != "":
+                            break
+                    while (True):
+                        self.username = input("KULLANICI-ADI giriniz (lider) : ")
+                        if self.username == "Q" or self.username == " q" :
+                            exit()
+                        elif self.username != "":
+                            break
+                    while (True):
+                        self.password = getpass("KULLANICI PAROLASI giriniz (****) : ")
+                        if self.password == " q" or self.password == "Q":
+                            exit()
+                        elif self.password != "":
+                            break
+
+                    if self.username != "" and self.password != "" and self.ip != "":
+                        self.server_data = {
+                            "Bildirim":
+                                [{"username": self.username,
+                                  "password": self.password,
+                                  "ip": self.ip,
+                                  "server_name": "Veritabanı",
+                                  "location": "remote"
+                                  }]
+                        }
+                        self.big_data.update(self.server_data)
+                        print("****************************************************")
+                        print("")
+                        data = {
+                            'location': "remote",
+                            # Server Configuration
+                            'ip': self.ip,
+                            'username': self.username,
+                            'password': self.password,
+                        }
+                        ssh_status = self.im.ssh_connect(data)
+                        if ssh_status is True:
+                            print("Bağlantı Başarılı. Kuruluma Devam Edebilirsiniz.")
+                            self.big_data.update(self.server_data)
+                            break
+                        else:
+                            print(
+                                "Bağlantı Sağlanamadı. Bağlantı Ayarlarını Kontrol Ederek Daha Sonra Tekrar Deneyiniz!\n")
+                            continue
+                    break
                     # else:
                     #     print("Lider Bilgilerini Yanlış veya Eksik girdiniz !!! ")
 

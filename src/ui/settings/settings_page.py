@@ -108,10 +108,23 @@ class SettingsPage(QWidget):
         self.liderLayout.addWidget(self.lider_server_username_pwd, 3, 0)
         self.liderGroup.setLayout(self.liderLayout)
 
+        # apprise (bildirim) server
+        self.appriseCheckBox = QCheckBox("Bildirim")
+        self.appriseCheckBox.setChecked(True)
+        self.apprise_server_addr = QLineEdit()
+        self.apprise_server_addr.setPlaceholderText("Bildirim Sunucu Adresi")
+        self.apprise_server_username = QLineEdit()
+        self.apprise_server_username.setPlaceholderText("Kullanıcı Adı")
+        self.apprise_server_username_pwd = QLineEdit()
+        self.apprise_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
+        self.apprise_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.apprise_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
+
         ## Connect Layout
         self.connectGroup = QGroupBox("Liderahenk Sunucu Erişim Bilgileri")
         self.connectLayout = QGridLayout()
-        self.connectLayout.addWidget(self.allComponentChekbox, 0, 0)
+        self.connectLayout.addWidget(self.allComponentChekbox, 0, 0, 1, 5)
+
         self.connectLayout.addWidget(self.databaseCheckBox, 1, 0)
         self.connectLayout.addWidget(self.db_server_addr, 2, 0)
         self.connectLayout.addWidget(self.db_server_username, 3, 0)
@@ -135,6 +148,15 @@ class SettingsPage(QWidget):
         self.connectLayout.addWidget(self.lider_server_username, 3, 3)
         self.connectLayout.addWidget(self.lider_server_username_pwd, 4, 3)
         self.connectLayout.addWidget(self.lider_checkControlButton, 5, 3)
+
+        self.connectLayout.addWidget(self.appriseCheckBox, 1, 4)
+        self.connectLayout.addWidget(self.apprise_server_addr, 2, 4)
+        self.connectLayout.addWidget(self.apprise_server_username, 3, 4)
+        self.connectLayout.addWidget(self.apprise_server_username_pwd, 4, 4)
+        self.connectLayout.addWidget(self.apprise_checkControlButton, 5, 4)
+
+        for col in range(5):
+            self.connectLayout.setColumnStretch(col, 1)
         self.connectGroup.setLayout(self.connectLayout)
 
         ## lider configure layout
@@ -286,11 +308,13 @@ class SettingsPage(QWidget):
         self.ldap_checkControlButton.clicked.connect(lambda: self.ssh_control("ldap"))
         self.ejabberd_checkControlButton.clicked.connect(lambda: self.ssh_control("ejabberd"))
         self.lider_checkControlButton.clicked.connect(lambda: self.ssh_control("lider"))
+        self.apprise_checkControlButton.clicked.connect(lambda: self.ssh_control("apprise"))
 
         self.databaseCheckBox.stateChanged.connect(self.change_database_checkbox)
         self.ldapCheckBox.stateChanged.connect(self.change_ldap_checkbox)
         self.ejabberdCheckBox.stateChanged.connect(self.change_ejabberd_checkbox)
         self.liderCheckBox.stateChanged.connect(self.change_lider_checkbox)
+        self.appriseCheckBox.stateChanged.connect(self.change_apprise_checkbox)
         self.allComponentChekbox.stateChanged.connect(self.all_components_install)
 
         self.install_button.clicked.connect(self.get_params)
@@ -337,12 +361,25 @@ class SettingsPage(QWidget):
             self.lider_server_username_pwd.setDisabled(True)
             self.lider_checkControlButton.setDisabled(True)
 
+    def change_apprise_checkbox(self):
+        if self.appriseCheckBox.isChecked():
+            self.apprise_server_addr.setDisabled(False)
+            self.apprise_server_username.setDisabled(False)
+            self.apprise_server_username_pwd.setDisabled(False)
+            self.apprise_checkControlButton.setDisabled(False)
+        else:
+            self.apprise_server_addr.setDisabled(True)
+            self.apprise_server_username.setDisabled(True)
+            self.apprise_server_username_pwd.setDisabled(True)
+            self.apprise_checkControlButton.setDisabled(True)
+
     def all_components_install(self):
         if self.allComponentChekbox.isChecked():
             self.databaseCheckBox.setChecked(True)
             self.ldapCheckBox.setChecked(True)
             self.ejabberdCheckBox.setChecked(True)
             self.liderCheckBox.setChecked(True)
+            self.appriseCheckBox.setChecked(True)
             self.databaseCheckBox.setDisabled(True)
 
             self.ejabberdCheckBox.setDisabled(True)
@@ -362,6 +399,12 @@ class SettingsPage(QWidget):
             self.ldap_server_username.setDisabled(True)
             self.ldap_server_username_pwd.setDisabled(True)
             self.ldap_checkControlButton.setDisabled(True)
+
+            self.appriseCheckBox.setDisabled(True)
+            self.apprise_server_addr.setDisabled(True)
+            self.apprise_server_username.setDisabled(True)
+            self.apprise_server_username_pwd.setDisabled(True)
+            self.apprise_checkControlButton.setDisabled(True)
         else:
             self.databaseCheckBox.setDisabled(False)
             self.ejabberdCheckBox.setDisabled(False)
@@ -381,6 +424,12 @@ class SettingsPage(QWidget):
             self.ldap_server_username.setDisabled(False)
             self.ldap_server_username_pwd.setDisabled(False)
             self.ldap_checkControlButton.setDisabled(False)
+
+            self.appriseCheckBox.setDisabled(False)
+            self.apprise_server_addr.setDisabled(False)
+            self.apprise_server_username.setDisabled(False)
+            self.apprise_server_username_pwd.setDisabled(False)
+            self.apprise_checkControlButton.setDisabled(False)
 
     def ad_change_state(self):
         if self.adSelectionBox.isChecked() is True:
@@ -466,6 +515,10 @@ class SettingsPage(QWidget):
         if self.ejabberdCheckBox.isChecked():
             ejabberd_install = True
 
+        apprise_install = False
+        if self.appriseCheckBox.isChecked():
+            apprise_install = True
+
         repo_key = self.repo_key.text()
         repo_addr = self.repo_addr.text()
         l_org_name = self.ldap_base_dn.text().split('.')
@@ -483,6 +536,9 @@ class SettingsPage(QWidget):
             self.lider_server_addr.setText(self.db_server_addr.text())
             self.lider_server_username.setText(self.db_server_username.text())
             self.lider_server_username_pwd.setText(self.db_server_username_pwd.text())
+            self.apprise_server_addr.setText(self.db_server_addr.text())
+            self.apprise_server_username.setText(self.db_server_username.text())
+            self.apprise_server_username_pwd.setText(self.db_server_username_pwd.text())
 
         params = {
             'all_components': all_components,
@@ -546,6 +602,13 @@ class SettingsPage(QWidget):
             'fs_agreement_path': '/home/{username}'.format(username=self.lider_server_username.text()),
             'fs_agent_file_path': '/home/{username}'.format(username=self.lider_server_username.text()),
 
+            # Apprise (Bildirim) Configuration
+            'apprise_install': apprise_install,
+            'apprise_server_addr': self.apprise_server_addr.text(),
+            'apprise_server_username': self.apprise_server_username.text(),
+            'apprise_server_username_pwd': self.apprise_server_username_pwd.text(),
+            'apprise_port': '8000',
+
             # repository parameters
             'repo_type': self.repo_type,
             'repo_key': repo_key,
@@ -555,7 +618,7 @@ class SettingsPage(QWidget):
             'lider_version': "3.0"
         }
 
-        if self.databaseCheckBox.isChecked() or self.ldapCheckBox.isChecked() or self.ejabberdCheckBox.isChecked() or self.liderCheckBox.isChecked():
+        if self.databaseCheckBox.isChecked() or self.ldapCheckBox.isChecked() or self.ejabberdCheckBox.isChecked() or self.liderCheckBox.isChecked() or self.appriseCheckBox.isChecked():
             if self.allComponentChekbox.isChecked() is not True:
                 if self.databaseCheckBox.isChecked():
                     if self.db_server_addr.text() == "" or self.db_server_username.text() == "" or self.db_server_username_pwd.text() == "":
@@ -637,6 +700,11 @@ class SettingsPage(QWidget):
             username = self.lider_server_username.text()
             password = self.lider_server_username_pwd.text()
 
+        if server == "apprise":
+            ip = self.apprise_server_addr.text()
+            username = self.apprise_server_username.text()
+            password = self.apprise_server_username_pwd.text()
+
         data = {
             'location': "remote",
             # Server Configuration
@@ -708,6 +776,18 @@ class SettingsPage(QWidget):
                 self.lider_server_addr.setText(data["lider_server_addr"])
                 self.lider_server_username.setText(data["lider_server_username"])
                 self.lider_server_username_pwd.setText(data["lider_server_username_pwd"])
+
+                if "apprise_install" in data:
+                    if data["apprise_install"] is True:
+                        self.appriseCheckBox.setChecked(True)
+                    else:
+                        self.appriseCheckBox.setChecked(False)
+                if "apprise_server_addr" in data:
+                    self.apprise_server_addr.setText(data["apprise_server_addr"])
+                if "apprise_server_username" in data:
+                    self.apprise_server_username.setText(data["apprise_server_username"])
+                if "apprise_server_username_pwd" in data:
+                    self.apprise_server_username_pwd.setText(data["apprise_server_username_pwd"])
 
                 self.ldap_base_dn.setText(data["l_base_dn"])
                 self.ldap_admin_pwd.setText(data["l_admin_pwd"])
